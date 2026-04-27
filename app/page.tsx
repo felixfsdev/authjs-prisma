@@ -1,14 +1,33 @@
-import { signIn } from "@/auth";
+import { auth, signIn, signOut } from "@/auth";
 
-export default function Home() {
+export default async function Home() {
+  const session = await auth();
+  if (session?.user) {
+    return (
+      <div>
+        <p>Signed in as {session.user.name}</p>
+        <form
+          action={async () => {
+            "use server";
+            await signOut();
+          }}
+        >
+          <button type="submit">Sign out</button>
+        </form>
+      </div>
+    );
+  }
+
   return (
-    <form
-      action={async () => {
-        "use server";
-        await signIn("github");
-      }}
-    >
-      <button type="submit">Signin with GitHub</button>
-    </form>
+    <div>
+      <form
+        action={async () => {
+          "use server";
+          await signIn("github");
+        }}
+      >
+        <button type="submit">Signin with GitHub</button>
+      </form>
+    </div>
   );
 }
